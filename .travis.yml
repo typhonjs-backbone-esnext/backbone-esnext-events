@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - "5.8.0"
+before_script:
+  - npm install -g gulp
+script:
+  - gulp eslint
+  - npm run test-coverage
