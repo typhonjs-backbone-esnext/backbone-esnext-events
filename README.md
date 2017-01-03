@@ -8,7 +8,7 @@
 
 [![Build Status](https://travis-ci.org/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://travis-ci.org/typhonjs-backbone-esnext/backbone-esnext-events)
 [![Coverage](https://img.shields.io/codecov/c/github/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://codecov.io/github/typhonjs-backbone-esnext/backbone-esnext-events)
-[![Dependency Status](https://www.versioneye.com/user/projects/56e8e67d4e714c0034fed4f2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56e8e67d4e714c0034fed4f2)
+[![Dependency Status](https://david-dm.org/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://david-dm.org/typhonjs-backbone-esnext/backbone-esnext-events)
 
 Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos.
 
@@ -16,7 +16,7 @@ TyphonEvents adds new functionality for triggering events. The following are new
 
 - `triggerDefer` - Defers invoking `trigger`.
 - `triggerSync` - Invokes all targets matched and passes back a single value or an array of results to the callee.
-- `triggerASync` - Invokes all targets matched and passes back a promise resolved with a single value or an array of 
+- `triggerAsync` - Invokes all targets matched and passes back a promise resolved with a single value or an array of 
 results through `Promise.all` which returns a single promise to the callee.
 
 [mainEventbus.js](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/mainEventbus.js) provides a standardized instance of TyphonEvents which serves as the name implies a main eventbus. In several TyphonJS repos it is mapped via JSPM to 'mainEventbus' such that one can import it via `import eventbus from 'mainEventbus';`
