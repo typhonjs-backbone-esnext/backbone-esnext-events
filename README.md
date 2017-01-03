@@ -10,13 +10,19 @@
 [![Coverage](https://img.shields.io/codecov/c/github/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://codecov.io/github/typhonjs-backbone-esnext/backbone-esnext-events)
 [![Dependency Status](https://david-dm.org/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://david-dm.org/typhonjs-backbone-esnext/backbone-esnext-events)
 
-Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos.
+Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos. It should be noted that there are no dependencies with backbone-esnext-events and it can be used independently in any project without pulling Underscore like Backbone does. 
 
 TyphonEvents adds new functionality for triggering events. The following are new trigger mechanisms:
 
-- `triggerDefer` - Defers invoking `trigger`.
-- `triggerSync` - Invokes all targets matched and passes back a single value or an array of results to the callee.
-- `triggerAsync` - Invokes all targets matched and passes back a promise resolved with a single value or an array of 
-results through `Promise.all` which returns a single promise to the callee.
+- `triggerDefer` - Defers invoking `trigger` to the next clock tick.
+- `triggerSync` - Synchronously invokes all targets matched and passes back a single value or an array of results to the callee.
+- `triggerAsync` - Asynchronously invokes all targets matched and passes back a promise resolved with a single value or an array of results through `Promise.all` which returns a single promise to the callee.
 
-[mainEventbus.js](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/mainEventbus.js) provides a standardized instance of TyphonEvents which serves as the name implies a main eventbus. In several TyphonJS repos it is mapped via JSPM to 'mainEventbus' such that one can import it via `import eventbus from 'mainEventbus';`
+To import TyphonEvents and create a new instance: 
+```
+import Events from 'backbone-esnext-events';
+
+const eventbus = new Events();
+```
+
+[mainEventbus.js](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/mainEventbus.js) provides a standardized instance of TyphonEvents which serves as the name implies a main eventbus. In several TyphonJS repos it is mapped via JSPM to 'mainEventbus' such that one can import it via `import eventbus from 'mainEventbus';` If not using a module system that can remap source code such as NPM one can import it via `import eventbus from 'backbone-esnext-events/src/mainEventbus';`
