@@ -562,11 +562,21 @@ const s_TRIGGER_EVENTS = (events, args) =>
    }
 };
 
-// Generate a unique integer id (unique within the entire client session).
+/**
+ * Generate a unique integer ID (unique within the entire client session).
+ *
+ * @type {number} - unique ID counter.
+ */
 let idCounter = 0;
 
-const s_UNIQUE_ID = (prefix) =>
+/**
+ * Creates a new unique ID with a given prefix
+ *
+ * @param {string}   prefix - An optional prefix to add to unique ID.
+ * @returns {string}
+ */
+const s_UNIQUE_ID = (prefix = '') =>
 {
-   const id = ++idCounter + '';
-   return prefix ? prefix + id : id;
+   const id = `${++idCounter}`;
+   return prefix ? `${prefix}${id}` : id;
 };

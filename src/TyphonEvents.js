@@ -18,7 +18,7 @@ export default class TyphonEvents extends Events
    /**
     * Provides a constructor which optionally takes the eventbus name.
     *
-    * @param eventbusName
+    * @param {string}   eventbusName - Optional eventbus name.
     */
    constructor(eventbusName = void 0)
    {
@@ -41,6 +41,8 @@ export default class TyphonEvents extends Events
     * Sets the eventbus name.
     *
     * @param {string}   name - The name for this eventbus.
+    *
+    * @return {TyphonEvents}
     */
    setEventbusName(name)
    {
