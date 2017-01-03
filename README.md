@@ -10,7 +10,7 @@
 [![Coverage](https://img.shields.io/codecov/c/github/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://codecov.io/github/typhonjs-backbone-esnext/backbone-esnext-events)
 [![Dependency Status](https://www.versioneye.com/user/projects/56e8e67d4e714c0034fed4f2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56e8e67d4e714c0034fed4f2)
 
-Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone/typhonjs-core-backbone-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos.
+Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos.
 
 TyphonEvents adds new functionality for triggering events. The following are new trigger mechanisms:
 
@@ -20,5 +20,3 @@ TyphonEvents adds new functionality for triggering events. The following are new
 results through `Promise.all` which returns a single promise to the callee.
 
 [mainEventbus.js](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/mainEventbus.js) provides a standardized instance of TyphonEvents which serves as the name implies a main eventbus. In several TyphonJS repos it is mapped via JSPM to 'mainEventbus' such that one can import it via `import eventbus from 'mainEventbus';`
-
-A [typhonjs-core-logging](https://github.com/typhonjs-common/typhonjs-core-logging) enabled version of TyphonEvents is available in the [typhonjs-core-backbone-events-logged](https://github.com/typhonjs-common/typhonjs-core-backbone-events-logged) repo.

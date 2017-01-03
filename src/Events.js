@@ -1,13 +1,18 @@
 /**
- * Backbone.Events - Provides the ability to bind and trigger custom named events. (http://backbonejs.org/#Events)
+ * backbone-esnext-events / Backbone.Events - Provides the ability to bind and trigger custom named events.
+ * (http://backbonejs.org/#Events)
  * ---------------
  *
- * An important consideration of Backbone-ES6 is that Events are no longer an object literal, but a full blown ES6
- * class. This is the biggest potential breaking change for Backbone-ES6 when compared to the original Backbone.
+ * An important consideration of Backbone-ESNext is that Events are no longer an object literal, but a full blown ES6
+ * class. This is the biggest potential breaking change for Backbone-ESNext when compared to the original Backbone.
  *
- * Previously Events could be mixed in to any object. This is no longer possible with Backbone-ES6 when working from
+ * Previously Events could be mixed in to any object. This is no longer possible with Backbone-ESNext when working from
  * source or the bundled versions. It should be noted that Events is also no longer mixed into Backbone itself, so
  * Backbone is not a Global events instance.
+ *
+ * Backbone-ESNext also separates Backbone into separate modules which may be used independently of Backbone itself. In
+ * particular backbone-esnext-events is a standalone NPM module that has no other dependencies. Underscore is being
+ * removed / minimized for Backbone-ESNext where possible.
  *
  * Catalog of Events:
  * Here's the complete list of built-in Backbone events, with arguments. You're also free to trigger your own events on
@@ -51,6 +56,10 @@
  *
  * class MyClass extends Backbone.Events {}
  *
+ * Or if importing this module directly use:
+ * import Events from 'backbone-esnext-events';
+ * class MyClass extends Events {}
+ *
  * @example
  * A nice ES6 pattern for creating a named events instance is the following:
  *
@@ -60,6 +69,8 @@
  *
  * This module / Events instance can then be imported by full path or if consuming in a modular runtime by creating
  * a mapped path to it.
+ *
+ * backbone-esnext-events provides a default main eventbus implementation found in `src/mainEventbus.js`.
  */
 export default class Events
 {
@@ -160,7 +171,7 @@ export default class Events
     * @param {object}   context  - Event context
     * @returns {Events}
     */
-   off(name, callback, context)
+   off(name, callback = void 0, context = void 0)
    {
       /* istanbul ignore if */
       if (!this._events) { return this; }
@@ -202,7 +213,7 @@ export default class Events
     * @param {object}   context  - Event context
     * @returns {*}
     */
-   on(name, callback, context)
+   on(name, callback, context = void 0)
    {
       return s_INTERNAL_ON(this, name, callback, context, void 0);
    }
@@ -219,7 +230,7 @@ export default class Events
     * @param {object}   context  - Event context
     * @returns {*}
     */
-   once(name, callback, context)
+   once(name, callback, context = void 0)
    {
       // Map the event into a `{event: once}` object.
       const events = s_EVENTS_API(s_ONCE_MAP, {}, name, callback, this.off.bind(this));
@@ -246,7 +257,7 @@ export default class Events
     * @param {function} callback - Event callback function
     * @returns {Events}
     */
-   stopListening(obj, name, callback)
+   stopListening(obj, name = void 0, callback = void 0)
    {
       const listeningTo = this._listeningTo;
       if (!listeningTo) { return this; }

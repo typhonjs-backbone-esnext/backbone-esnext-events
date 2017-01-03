@@ -13,6 +13,9 @@ describe('Events', () =>
    {
       eventbus.setEventbusName('testname');
       assert(eventbus.getEventbusName() === 'testname');
+
+      eventbus = new TyphonEvents('testname2');
+      assert(eventbus.getEventbusName() === 'testname2');
    });
 
    it('trigger', () =>
@@ -35,11 +38,20 @@ describe('Events', () =>
    {
       const test = new TyphonEvents();
 
-      test.listenTo(eventbus, 'test:trigger', () => { callbacks.testTrigger = true; });
+      callbacks.testTriggerCount = 0;
+
+      test.listenTo(eventbus, 'test:trigger', () => { callbacks.testTriggerCount++; });
 
       eventbus.trigger('test:trigger');
 
-      assert(callbacks.testTrigger);
+      assert(callbacks.testTriggerCount === 1);
+
+      // Test stop listening such that `test:trigger` is no longer registered.
+      test.stopListening(eventbus, 'test:trigger');
+
+      eventbus.trigger('test:trigger');
+
+      assert(callbacks.testTriggerCount === 1);
    });
 
    it('trigger (listenToOnce)', () =>
@@ -79,11 +91,27 @@ describe('Events', () =>
    {
       const test = new TyphonEvents();
 
-      test.listenTo(eventbus, 'test:trigger', () => { callbacks.testTrigger = true; });
-      eventbus.on('test:trigger:verify', () => { assert(callbacks.testTrigger); done(); });
+      callbacks.testTriggerCount = 0;
+
+      test.listenTo(eventbus, 'test:trigger', () => { callbacks.testTriggerCount++; });
+
+      eventbus.on('test:trigger:verify', () =>
+      {
+         assert(callbacks.testTriggerCount === 1);
+
+         // Test stop listening such that `test:trigger` is no longer registered.
+         test.stopListening(eventbus, 'test:trigger');
+      });
+
+      eventbus.on('test:trigger:verify:done', () => { assert(callbacks.testTriggerCount === 1); done(); });
 
       eventbus.triggerDefer('test:trigger');
+
       eventbus.triggerDefer('test:trigger:verify');
+
+      eventbus.triggerDefer('test:trigger');
+
+      eventbus.triggerDefer('test:trigger:verify:done');
    });
 
    it('triggerDefer (listenToOnce)', (done) =>
@@ -163,13 +191,22 @@ describe('Events', () =>
    {
       const test = new TyphonEvents();
 
-      test.listenTo(eventbus, 'test:trigger:sync', () => { callbacks.testTriggerSync = true; return 'foo'; });
+      callbacks.testTriggerCount = 0;
 
-      const result = eventbus.triggerSync('test:trigger:sync');
+      test.listenTo(eventbus, 'test:trigger:sync', () => { callbacks.testTriggerCount++; return 'foo'; });
 
-      assert(callbacks.testTriggerSync);
+      let result = eventbus.triggerSync('test:trigger:sync');
+
+      assert(callbacks.testTriggerCount === 1);
       assert(!Array.isArray(result));
       assert(result === 'foo');
+
+      test.stopListening(eventbus, 'test:trigger:sync');
+
+      result = eventbus.triggerSync('test:trigger:sync');
+
+      assert(callbacks.testTriggerCount === 1);
+      assert(result === void 0);
    });
 
    it('triggerSync-1 (listenToOnce)', () =>
@@ -261,16 +298,28 @@ describe('Events', () =>
    {
       const test = new TyphonEvents();
 
-      test.listenTo(eventbus, 'test:trigger:async', () => { callbacks.testTriggerSync = true; return 'foo'; });
+      callbacks.testTriggerCount = 0;
 
-      const promise = eventbus.triggerAsync('test:trigger:async');
+      test.listenTo(eventbus, 'test:trigger:async', () => { callbacks.testTriggerCount++; return 'foo'; });
+
+      let promise = eventbus.triggerAsync('test:trigger:async');
 
       assert(promise instanceof Promise);
 
       promise.then((result) =>
       {
-         assert(callbacks.testTriggerSync);
+         assert(callbacks.testTriggerCount === 1);
          assert(result === 'foo');
+      });
+
+      test.stopListening(eventbus, 'test:trigger:async');
+
+      promise = eventbus.triggerAsync('test:trigger:async');
+
+      promise.then((result) =>
+      {
+         assert(result === void 0);
+         assert(callbacks.testTriggerCount === 1);
          done();
       });
    });
