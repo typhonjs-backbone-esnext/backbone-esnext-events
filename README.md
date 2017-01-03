@@ -1,6 +1,6 @@
 ![backbone-esnext-events](http://i.imgur.com/gfeYvBh.png)
 
-[![Backbone](https://img.shields.io/badge/backbone-1.3.3-yellowgreen.svg?style=flat)](https://github.com/jashkenas/backbone)
+[![NPM](https://img.shields.io/npm/v/backbone-esnext-events.svg?label=npm)](https://www.npmjs.com/package/backbone-esnext-events)
 [![Documentation](http://docs.typhonjs.io/typhonjs-backbone-esnext/backbone-esnext-events/badge.svg)](http://docs.typhonjs.io/typhonjs-backbone-esnext/backbone-esnext-events/)
 [![Code Style](https://img.shields.io/badge/code%20style-allman-yellowgreen.svg?style=flat)](https://en.wikipedia.org/wiki/Indent_style#Allman_style)
 [![License](https://img.shields.io/badge/license-MPLv2-yellowgreen.svg?style=flat)](https://github.com/typhonjs-backbone/typhonjs-core-backbone-events/blob/master/LICENSE)
