@@ -23,5 +23,12 @@
     "prepublish": "babel-node ./node_modules/typhonjs-npm-scripts-publish/scripts/prepublish.js",
     "test": "babel-node ./node_modules/typhonjs-npm-scripts-test-mocha/scripts/mocha.js",
     "test-coverage": "babel-node ./node_modules/typhonjs-npm-scripts-test-mocha/scripts/mocha-istanbul-report.js"
-  }
+  },
+  "files": [
+    "dist",
+    "src",
+    ".esdocrc",
+    ".npmscriptrc",
+    "AUTHORS.md"
+  ]
 }
