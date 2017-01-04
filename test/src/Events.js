@@ -1,6 +1,8 @@
 import { assert }    from 'chai';
 import TyphonEvents  from '../../src/TyphonEvents';
 
+import mainEventbus  from '../../src/mainEventbus';
+
 /* eslint-disable no-undef */
 
 describe('Events', () =>
@@ -16,6 +18,13 @@ describe('Events', () =>
 
       eventbus = new TyphonEvents('testname2');
       assert(eventbus.getEventbusName() === 'testname2');
+   });
+
+   it('trigger (mainEventbus)', () =>
+   {
+      mainEventbus.on('test:trigger', () => { callbacks.testTrigger = true; });
+      mainEventbus.trigger('test:trigger');
+      assert(callbacks.testTrigger);
    });
 
    it('trigger', () =>

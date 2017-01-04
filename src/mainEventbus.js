@@ -1,5 +1,3 @@
-'use strict';
-
 import TyphonEvents  from './TyphonEvents.js';
 
 /**
