@@ -3,5 +3,5 @@
  * NPM: https://www.npmjs.com/package/typhonjs-config-eslint
  */
 {
-   "extends": "./node_modules/typhonjs-config-eslint/2.0/es6/browser/.eslintrc"
+   "extends": "./node_modules/typhonjs-config-eslint/2.0/es6/server/node/.eslintrc"
 }
