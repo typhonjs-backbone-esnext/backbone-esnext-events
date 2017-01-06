@@ -12,6 +12,9 @@
 
 Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos. It should be noted that there are no dependencies with backbone-esnext-events and it can be used independently in any project without pulling in Underscore like Backbone does. 
 
+The default trigger mechanism work justs as it does with Backbone:
+- `trigger` - Invokes all targets matched with a one way message. 
+
 TyphonEvents adds new functionality for triggering events. The following are new trigger mechanisms:
 
 - `triggerDefer` - Defers invoking `trigger` to the next clock tick.
@@ -23,6 +26,10 @@ To import TyphonEvents and create a new instance:
 import Events from 'backbone-esnext-events';
 
 const eventbus = new Events();
+
+// or extend a class to add event functionality
+ 
+export default class MyThing extends Events {}
 ```
 
-[mainEventbus.js](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/mainEventbus.js) provides a standardized instance of TyphonEvents which serves as the name implies a main eventbus. In several TyphonJS repos it is mapped via JSPM to 'mainEventbus' such that one can import it via `import eventbus from 'mainEventbus';` If not using a module system that can remap source code such as NPM one can import it via `import eventbus from 'backbone-esnext-events/src/mainEventbus';`
+Please see [backbone-esnext-eventbus](https://www.npmjs.com/package/backbone-esnext-eventbus) for a module which provides a default main eventbus instance for ease of use across modules.
