@@ -22,7 +22,7 @@ export default class EventProxy
 
    getEventbusName()
    {
-      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.') }
+      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.'); }
 
       return this._eventbus.getEventbusName();
    }
@@ -31,7 +31,7 @@ export default class EventProxy
    {
       if (this._events === null || this._eventbus === null)
       {
-         throw new ReferenceError('This EventProxy instance has been destroyed.')
+         throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
       this._events.stopListening(this._eventbus, name, callback, context);
@@ -43,7 +43,7 @@ export default class EventProxy
    {
       if (this._events === null || this._eventbus === null)
       {
-         throw new ReferenceError('This EventProxy instance has been destroyed.')
+         throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
       this._events.listenTo(this._eventbus, name, callback, context);
@@ -55,7 +55,7 @@ export default class EventProxy
    {
       if (this._events === null || this._eventbus === null)
       {
-         throw new ReferenceError('This EventProxy instance has been destroyed.')
+         throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
       this._events.listenToOnce(this._eventbus, name, callback, context);
@@ -65,7 +65,7 @@ export default class EventProxy
 
    trigger()
    {
-      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.') }
+      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.'); }
 
       this._eventbus.trigger(...arguments);
 
@@ -74,14 +74,14 @@ export default class EventProxy
 
    triggerAsync()
    {
-      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.') }
+      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.'); }
 
       return this._eventbus.triggerAsync(...arguments);
    }
 
    triggerDefer()
    {
-      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.') }
+      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.'); }
 
       this._eventbus.triggerDefer(...arguments);
 
@@ -90,7 +90,7 @@ export default class EventProxy
 
    triggerSync()
    {
-      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.') }
+      if (this._eventbus === null) { throw new ReferenceError('This EventProxy instance has been destroyed.'); }
 
       return this._eventbus.triggerSync(...arguments);
    }
