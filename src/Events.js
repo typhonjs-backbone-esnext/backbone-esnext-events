@@ -97,12 +97,13 @@ export default class Events
     *
     * @see http://backbonejs.org/#Events-listenTo
     *
-    * @param {object}   obj      - Event context
-    * @param {string}   name     - Event name(s)
-    * @param {function} callback - Event callback function
+    * @param {object}   obj         - Event context
+    * @param {string}   name        - Event name(s)
+    * @param {function} callback    - Event callback function
+    * @param {object}   [context]   - Optional: event context
     * @returns {Events}
     */
-   listenTo(obj, name, callback)
+   listenTo(obj, name, callback, context = void 0)
    {
       if (!obj) { return this; }
       const id = obj._listenId || (obj._listenId = s_UNIQUE_ID('l'));
@@ -118,7 +119,7 @@ export default class Events
       }
 
       // Bind callbacks on obj, and keep track of them on listening.
-      s_INTERNAL_ON(obj, name, callback, this, listening);
+      s_INTERNAL_ON(obj, name, callback, context, listening);
       return this;
    }
 
@@ -130,14 +131,15 @@ export default class Events
     * @param {object}   obj      - Event context
     * @param {string}   name     - Event name(s)
     * @param {function} callback - Event callback function
+    * @param {object}   [context=this] - Optional: event context
     * @returns {Events}
     */
-   listenToOnce(obj, name, callback)
+   listenToOnce(obj, name, callback, context = void 0)
    {
       // Map the event into a `{event: once}` object.
       const events = s_EVENTS_API(s_ONCE_MAP, {}, name, callback, this.stopListening.bind(this, obj));
 
-      return this.listenTo(obj, events, void 0);
+      return this.listenTo(obj, events, void 0, context);
    }
 
    /**
@@ -195,16 +197,16 @@ export default class Events
     * Callbacks bound to the special "all" event will be triggered when any event occurs, and are passed the name of
     * the event as the first argument. For example, to proxy all events from one object to another:
     * proxy.on("all", function(eventName) {
-    *    object.trigger(eventName);
-    * });
+   *    object.trigger(eventName);
+   * });
     *
     * @example
     * All Backbone event methods also support an event map syntax, as an alternative to positional arguments:
     * book.on({
-    *    "change:author": authorPane.update,
-    *    "change:title change:subtitle": titleView.update,
-    *    "destroy": bookView.remove
-    * });
+   *    "change:author": authorPane.update,
+   *    "change:title change:subtitle": titleView.update,
+   *    "destroy": bookView.remove
+   * });
     *
     * @see http://backbonejs.org/#Events-on
     *
@@ -252,12 +254,13 @@ export default class Events
     *
     * @see http://backbonejs.org/#Events-stopListening
     *
-    * @param {object}   obj      - Event context
-    * @param {string}   name     - Event name(s)
-    * @param {function} callback - Event callback function
+    * @param {object}   obj            - Event context
+    * @param {string}   name           - Event name(s)
+    * @param {function} callback       - Event callback function
+    * @param {object}   [context=this] - Optional: event context
     * @returns {Events}
     */
-   stopListening(obj, name = void 0, callback = void 0)
+   stopListening(obj, name = void 0, callback = void 0, context = void 0)
    {
       const listeningTo = this._listeningTo;
       if (!listeningTo) { return this; }
@@ -271,7 +274,7 @@ export default class Events
          // If listening doesn't exist, this object is not currently listening to obj. Break out early.
          if (!listening) { break; }
 
-         listening.obj.off(name, callback, this);
+         listening.obj.off(name, callback, context);
       }
 
       return this;
