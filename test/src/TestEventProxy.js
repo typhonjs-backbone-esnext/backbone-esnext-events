@@ -69,15 +69,32 @@ describe('EventProxy', () =>
       };
 
       // Ensure that proxy is destroyed and all methods throw a ReferenceError.
-      try { proxy.destroy(); } catch (err) { testError(err); }
-      try { proxy.getEventbusName(); } catch (err) { testError(err); }
-      try { proxy.off(); } catch (err) { testError(err); }
-      try { proxy.on('test:bogus', testError); } catch (err) { testError(err); }
-      try { proxy.once('test:bogus', testError); } catch (err) { testError(err); }
-      try { proxy.trigger('test:trigger'); } catch (err) { testError(err); }
-      try { proxy.triggerAsync('test:trigger'); } catch (err) { testError(err); }
-      try { proxy.triggerDefer('test:trigger'); } catch (err) { testError(err); }
-      try { proxy.triggerSync('test:trigger'); } catch (err) { testError(err); }
+      try { proxy.destroy(); }
+      catch (err) { testError(err); }
+
+      try { proxy.getEventbusName(); }
+      catch (err) { testError(err); }
+
+      try { proxy.off(); }
+      catch (err) { testError(err); }
+
+      try { proxy.on('test:bogus', testError); }
+      catch (err) { testError(err); }
+
+      try { proxy.once('test:bogus', testError); }
+      catch (err) { testError(err); }
+
+      try { proxy.trigger('test:trigger'); }
+      catch (err) { testError(err); }
+
+      try { proxy.triggerAsync('test:trigger'); }
+      catch (err) { testError(err); }
+
+      try { proxy.triggerDefer('test:trigger'); }
+      catch (err) { testError(err); }
+
+      try { proxy.triggerSync('test:trigger'); }
+      catch (err) { testError(err); }
 
       assert(callbacks.testTriggerCount === 2);
    });
