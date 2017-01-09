@@ -1,5 +1,5 @@
 /**
- * backbone-esnext-events / Backbone.Events - Provides the ability to bind and trigger custom named events.
+ * backbone-esnext-events / Provides the ability to bind and trigger custom named events.
  * (http://backbonejs.org/#Events)
  * ---------------
  *
@@ -14,50 +14,18 @@
  * particular backbone-esnext-events is a standalone NPM module that has no other dependencies. Underscore is being
  * removed / minimized for Backbone-ESNext where possible.
  *
- * Catalog of Events:
- * Here's the complete list of built-in Backbone events, with arguments. You're also free to trigger your own events on
- * Models, Collections and Views as you see fit.
- *
- * "add" (model, collection, options) — when a model is added to a collection.
- * "remove" (model, collection, options) — when a model is removed from a collection.
- * "update" (collection, options) — single event triggered after any number of models have been added or removed from a
- * collection.
- * "reset" (collection, options) — when the collection's entire contents have been reset.
- * "sort" (collection, options) — when the collection has been re-sorted.
- * "change" (model, options) — when a model's attributes have changed.
- * "change:[attribute]" (model, value, options) — when a specific attribute has been updated.
- * "destroy" (model, collection, options) — when a model is destroyed.
- * "request" (model_or_collection, xhr, options) — when a model or collection has started a request to the server.
- * "sync" (model_or_collection, response, options) — when a model or collection has been successfully synced with the
- * server.
- * "error" (model_or_collection, response, options) — when a model's or collection's request to the server has failed.
- * "invalid" (model, error, options) — when a model's validation fails on the client.
- * "route:[name]" (params) — Fired by the router when a specific route is matched.
- * "route" (route, params) — Fired by the router when any route has been matched.
- * "route" (router, route, params) — Fired by history when any route has been matched.
- * "all" — this special event fires for any triggered event, passing the event name as the first argument followed by
- * all trigger arguments.
- *
- * Generally speaking, when calling a function that emits an event (model.set, collection.add, and so on...), if you'd
- * like to prevent the event from being triggered, you may pass {silent: true} as an option. Note that this is rarely,
- * perhaps even never, a good idea. Passing through a specific flag in the options for your event callback to look at,
- * and choose to ignore, will usually work out better.
+ * This class essentially implements the default Backbone events functionality and is extended by {@link TyphonEvents}
+ * which provides additional trigger mechanisms.
  *
  * @example
- * This no longer works:
- *
- * let object = {};
- * _.extend(object, Backbone.Events);
- * object.on('expand', function(){ alert('expanded'); });
- * object.trigger('expand');
- *
- * One must now use ES6 extends syntax for Backbone.Events when inheriting events functionality:
+ * One must now use ES6 extends syntax for Backbone.Events when inheriting events functionality from Backbone-ESNext:
  * import Backbone from 'backbone';
  *
  * class MyClass extends Backbone.Events {}
  *
  * Or if importing this module directly use:
  * import Events from 'backbone-esnext-events';
+ *
  * class MyClass extends Events {}
  *
  * @example
@@ -66,6 +34,11 @@
  * import Backbone from 'backbone';
  *
  * export default new Backbone.Events();
+ *
+ * Or if importing this module directly use:
+ * import Events from 'backbone-esnext-events';
+ *
+ * export default new Events();
  *
  * This module / Events instance can then be imported by full path or if consuming in a modular runtime by creating
  * a mapped path to it.
@@ -177,7 +150,13 @@ export default class Events
    {
       /* istanbul ignore if */
       if (!this._events) { return this; }
+
+      /**
+       * @type {*}
+       * @private
+       */
       this._events = s_EVENTS_API(s_OFF_API, this._events, name, callback, { context, listeners: this._listeners });
+
       return this;
    }
 
@@ -197,16 +176,16 @@ export default class Events
     * Callbacks bound to the special "all" event will be triggered when any event occurs, and are passed the name of
     * the event as the first argument. For example, to proxy all events from one object to another:
     * proxy.on("all", function(eventName) {
-   *    object.trigger(eventName);
-   * });
+    *    object.trigger(eventName);
+    * });
     *
     * @example
     * All Backbone event methods also support an event map syntax, as an alternative to positional arguments:
     * book.on({
-   *    "change:author": authorPane.update,
-   *    "change:title change:subtitle": titleView.update,
-   *    "destroy": bookView.remove
-   * });
+    *    "change:author": authorPane.update,
+    *    "change:title change:subtitle": titleView.update,
+    *    "destroy": bookView.remove
+    * });
     *
     * @see http://backbonejs.org/#Events-on
     *

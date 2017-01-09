@@ -2,9 +2,16 @@
    "title": "backbone-esnext-events",
    "source": "src",
    "destination": "docs",
+   "access": ["public", "private", "protected"],
    "plugins":
    [
       { "name": "esdoc-plugin-enhanced-navigation" }
    ],
-   "manual": { "changelog": ["./CHANGELOG.md"] }
+   "manual": { "changelog": ["./CHANGELOG.md"] },
+   "test":
+   {
+      "type": "mocha",
+      "source": "test/src",
+      "includes": [".js$"]
+   }
 }

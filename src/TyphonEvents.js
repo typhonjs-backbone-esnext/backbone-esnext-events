@@ -46,6 +46,11 @@ export default class TyphonEvents extends Events
     */
    setEventbusName(name)
    {
+      /**
+       * Stores the name of this eventbus.
+       * @type {string}
+       * @private
+       */
       this._eventbusName = name;
 
       return this;
@@ -90,7 +95,7 @@ export default class TyphonEvents extends Events
     * value or in an array and passes it back to the callee in a synchronous manner.
     *
     * @param {string}   name  - Event name(s)
-    * @returns {Array<*>}
+    * @returns {*|Array<*>}
     */
    triggerSync(name)
    {
