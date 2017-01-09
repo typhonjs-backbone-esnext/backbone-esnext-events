@@ -1,6 +1,6 @@
 {
   "name": "backbone-esnext-events",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/typhonjs-backbone-esnext/backbone-esnext-events",
   "description": "Separates 'events' support from Backbone in addition to adding TyphonJS extensions.",
   "license": "MPL-2.0",
