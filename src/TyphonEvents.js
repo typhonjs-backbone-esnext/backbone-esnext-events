@@ -194,7 +194,7 @@ const s_TRIGGER_API = (iterateeTarget, objEvents, name, cb, args) =>
  *
  * @param {Array<*>} events   -  Array of stored event callback data.
  * @param {Array<*>} args     -  Arguments supplied to `triggerSync`.
- * @returns {Array<*>}
+ * @returns {*|Array<*>}
  */
 const s_TRIGGER_SYNC_EVENTS = (events, args) =>
 {
