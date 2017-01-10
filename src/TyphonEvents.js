@@ -189,91 +189,6 @@ const s_TRIGGER_API = (iterateeTarget, objEvents, name, cb, args) =>
 
 /**
  * A difficult-to-believe, but optimized internal dispatch function for triggering events. Tries to keep the usual
- * cases speedy (most internal Backbone events have 3 arguments). This dispatch method passes back an array with
- * all results returned by any invoked targets.
- *
- * @param {Array<*>} events   -  Array of stored event callback data.
- * @param {Array<*>} args     -  Arguments supplied to `triggerSync`.
- * @returns {*|Array<*>}
- */
-const s_TRIGGER_SYNC_EVENTS = (events, args) =>
-{
-   let ev, i = -1;
-   const a1 = args[0], a2 = args[1], a3 = args[2], l = events.length;
-
-   let result;
-   const results = [];
-
-   switch (args.length)
-   {
-      case 0:
-         while (++i < l)
-         {
-            result = (ev = events[i]).callback.call(ev.ctx);
-
-            // If we received a valid result return immediately.
-            if (result !== null || typeof result !== 'undefined')
-            {
-               results.push(result);
-            }
-         }
-         break;
-      case 1:
-         while (++i < l)
-         {
-            result = (ev = events[i]).callback.call(ev.ctx, a1);
-
-            // If we received a valid result return immediately.
-            if (result !== null || typeof result !== 'undefined')
-            {
-               results.push(result);
-            }
-         }
-         break;
-      case 2:
-         while (++i < l)
-         {
-            result = (ev = events[i]).callback.call(ev.ctx, a1, a2);
-
-            // If we received a valid result return immediately.
-            if (result !== null || typeof result !== 'undefined')
-            {
-               results.push(result);
-            }
-         }
-         break;
-      case 3:
-         while (++i < l)
-         {
-            result = (ev = events[i]).callback.call(ev.ctx, a1, a2, a3);
-
-            // If we received a valid result return immediately.
-            if (result !== null || typeof result !== 'undefined')
-            {
-               results.push(result);
-            }
-         }
-         break;
-      default:
-         while (++i < l)
-         {
-            result = (ev = events[i]).callback.apply(ev.ctx, args);
-
-            // If we received a valid result return immediately.
-            if (result !== null || typeof result !== 'undefined')
-            {
-               results.push(result);
-            }
-         }
-         break;
-   }
-
-   // Return the results array if there are more than one or just a single result.
-   return results.length > 1 ? results : result;
-};
-
-/**
- * A difficult-to-believe, but optimized internal dispatch function for triggering events. Tries to keep the usual
  * cases speedy (most internal Backbone events have 3 arguments). This dispatch method uses ES6 Promises and adds
  * any returned results to an array which is added to a Promise.all construction which passes back a Promise which
  * waits until all Promises complete. Any target invoked may return a Promise or any result. This is very useful to
@@ -301,10 +216,7 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
                result = (ev = events[i]).callback.call(ev.ctx);
 
                // If we received a valid result add it to the promises array.
-               if (result !== null || typeof result !== 'undefined')
-               {
-                  results.push(result);
-               }
+               if (result !== null || typeof result !== 'undefined') { results.push(result); }
             }
             break;
 
@@ -314,10 +226,7 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
                result = (ev = events[i]).callback.call(ev.ctx, a1);
 
                // If we received a valid result add it to the promises array.
-               if (result !== null || typeof result !== 'undefined')
-               {
-                  results.push(result);
-               }
+               if (result !== null || typeof result !== 'undefined') { results.push(result); }
             }
             break;
 
@@ -327,10 +236,7 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
                result = (ev = events[i]).callback.call(ev.ctx, a1, a2);
 
                // If we received a valid result add it to the promises array.
-               if (result !== null || typeof result !== 'undefined')
-               {
-                  results.push(result);
-               }
+               if (result !== null || typeof result !== 'undefined') { results.push(result); }
             }
             break;
 
@@ -340,10 +246,7 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
                result = (ev = events[i]).callback.call(ev.ctx, a1, a2, a3);
 
                // If we received a valid result add it to the promises array.
-               if (result !== null || typeof result !== 'undefined')
-               {
-                  results.push(result);
-               }
+               if (result !== null || typeof result !== 'undefined') { results.push(result); }
             }
             break;
 
@@ -353,10 +256,7 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
                result = (ev = events[i]).callback.apply(ev.ctx, args);
 
                // If we received a valid result add it to the promises array.
-               if (result !== null || typeof result !== 'undefined')
-               {
-                  results.push(result);
-               }
+               if (result !== null || typeof result !== 'undefined') { results.push(result); }
             }
             break;
       }
@@ -368,4 +268,74 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
 
    // If there are multiple results then use Promise.all otherwise Promise.resolve.
    return results.length > 1 ? Promise.all(results) : Promise.resolve(result);
+};
+
+/**
+ * A difficult-to-believe, but optimized internal dispatch function for triggering events. Tries to keep the usual
+ * cases speedy (most internal Backbone events have 3 arguments). This dispatch method synchronously passes back a
+ * single value or an array with all results returned by any invoked targets.
+ *
+ * @param {Array<*>} events   -  Array of stored event callback data.
+ * @param {Array<*>} args     -  Arguments supplied to `triggerSync`.
+ * @returns {*|Array<*>}
+ */
+const s_TRIGGER_SYNC_EVENTS = (events, args) =>
+{
+   let ev, i = -1;
+   const a1 = args[0], a2 = args[1], a3 = args[2], l = events.length;
+
+   let result;
+   const results = [];
+
+   switch (args.length)
+   {
+      case 0:
+         while (++i < l)
+         {
+            result = (ev = events[i]).callback.call(ev.ctx);
+
+            // If we received a valid result return immediately.
+            if (result !== null || typeof result !== 'undefined') { results.push(result); }
+         }
+         break;
+      case 1:
+         while (++i < l)
+         {
+            result = (ev = events[i]).callback.call(ev.ctx, a1);
+
+            // If we received a valid result return immediately.
+            if (result !== null || typeof result !== 'undefined') { results.push(result); }
+         }
+         break;
+      case 2:
+         while (++i < l)
+         {
+            result = (ev = events[i]).callback.call(ev.ctx, a1, a2);
+
+            // If we received a valid result return immediately.
+            if (result !== null || typeof result !== 'undefined') { results.push(result); }
+         }
+         break;
+      case 3:
+         while (++i < l)
+         {
+            result = (ev = events[i]).callback.call(ev.ctx, a1, a2, a3);
+
+            // If we received a valid result return immediately.
+            if (result !== null || typeof result !== 'undefined') { results.push(result); }
+         }
+         break;
+      default:
+         while (++i < l)
+         {
+            result = (ev = events[i]).callback.apply(ev.ctx, args);
+
+            // If we received a valid result return immediately.
+            if (result !== null || typeof result !== 'undefined') { results.push(result); }
+         }
+         break;
+   }
+
+   // Return the results array if there are more than one or just a single result.
+   return results.length > 1 ? results : result;
 };
