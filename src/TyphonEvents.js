@@ -366,5 +366,6 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
       return Promise.reject(error);
    }
 
+   // If there are multiple results then use Promise.all otherwise Promise.resolve.
    return results.length > 1 ? Promise.all(results) : Promise.resolve(result);
 };
