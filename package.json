@@ -1,6 +1,6 @@
 {
   "name": "backbone-esnext-events",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "homepage": "https://github.com/typhonjs-backbone-esnext/backbone-esnext-events",
   "description": "Separates 'events' support from Backbone in addition to adding TyphonJS extensions.",
   "license": "MPL-2.0",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "typhonjs-config-eslint": "^0.4.0",
-    "typhonjs-npm-build-test": "^0.3.0"
+    "typhonjs-npm-build-test": "^0.4.0"
   },
   "scripts": {
     "build": "babel-node ./node_modules/typhonjs-npm-scripts-build-babel/scripts/build.js",
@@ -35,6 +35,7 @@
     "test-coverage": "babel-node ./node_modules/typhonjs-npm-scripts-test-mocha/scripts/mocha-istanbul-report.js"
   },
   "files": [
+    ".tjsdoc",
     "dist",
     "src",
     ".esdocrc",
