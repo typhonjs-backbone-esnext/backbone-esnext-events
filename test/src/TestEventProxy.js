@@ -28,19 +28,126 @@ describe('EventProxy', () =>
       callbacks.testTriggerCount = 0;
 
       proxy.on('test:trigger', () => { callbacks.testTriggerCount++; });
-      proxy.on('test:trigger2', () => { callbacks.testTriggerCount++; });
+      eventbus.on('test:trigger2', () => { callbacks.testTriggerCount++; });
 
       proxy.trigger('test:trigger');
+      proxy.trigger('test:trigger2');
       eventbus.trigger('test:trigger2');
 
-      assert(callbacks.testTriggerCount === 2);
+      assert.strictEqual(callbacks.testTriggerCount, 3);
 
       proxy.off();
+
+      assert.strictEqual(proxy.eventCount, 0);
 
       eventbus.trigger('test:trigger');
       eventbus.trigger('test:trigger2');
 
-      assert(callbacks.testTriggerCount === 2);
+      assert.strictEqual(callbacks.testTriggerCount, 4);
+   });
+
+   it('trigger (on / off - name)', () =>
+   {
+      callbacks.testTriggerCount = 0;
+
+      eventbus.on('test:trigger', () => { callbacks.testTriggerCount++; });
+      proxy.on('test:trigger', () => { callbacks.testTriggerCount++; });
+      proxy.on('test:trigger2', () => { callbacks.testTriggerCount++; });
+
+      eventbus.trigger('test:trigger');
+      proxy.trigger('test:trigger');
+      proxy.trigger('test:trigger2');
+
+      assert.strictEqual(callbacks.testTriggerCount, 5);
+
+      proxy.off('test:trigger');
+
+      assert.strictEqual(proxy.eventCount, 1);
+
+      proxy.trigger('test:trigger');
+      eventbus.trigger('test:trigger');
+
+      proxy.trigger('test:trigger2');
+
+      proxy.off('test:trigger2');
+
+      assert.strictEqual(proxy.eventCount, 0);
+
+      proxy.trigger('test:trigger2');
+      eventbus.trigger('test:trigger2');
+
+      assert.strictEqual(callbacks.testTriggerCount, 6);
+   });
+
+   it('trigger (on / off - callback)', () =>
+   {
+      callbacks.testTriggerCount = 0;
+
+      const callback1 = () => { callbacks.testTriggerCount++; };
+      const callback2 = () => { callbacks.testTriggerCount++; };
+
+      eventbus.on('test:trigger', callback1);
+      proxy.on('test:trigger', callback1);
+      proxy.on('test:trigger2', callback2);
+
+      eventbus.trigger('test:trigger');
+      proxy.trigger('test:trigger');
+      proxy.trigger('test:trigger2');
+
+      assert.strictEqual(callbacks.testTriggerCount, 5);
+
+      proxy.off(void 0, callback1);
+
+      assert.strictEqual(proxy.eventCount, 1);
+
+      proxy.trigger('test:trigger');
+      eventbus.trigger('test:trigger');
+
+      proxy.trigger('test:trigger2');
+
+      proxy.off(void 0, callback2);
+
+      assert.strictEqual(proxy.eventCount, 0);
+
+      proxy.trigger('test:trigger2');
+      eventbus.trigger('test:trigger2');
+
+      assert.strictEqual(callbacks.testTriggerCount, 6);
+   });
+
+   it('trigger (on / off - callback)', () =>
+   {
+      callbacks.testTriggerCount = 0;
+
+      const context = {};
+
+      eventbus.on('test:trigger', () => { callbacks.testTriggerCount++; }, context);
+      proxy.on('test:trigger', () => { callbacks.testTriggerCount++; }, context);
+      proxy.on('test:trigger2', () => { callbacks.testTriggerCount++; }, callbacks);
+
+      eventbus.trigger('test:trigger');
+      proxy.trigger('test:trigger');
+      proxy.trigger('test:trigger2');
+
+      assert.strictEqual(callbacks.testTriggerCount, 5);
+
+      proxy.off(void 0, void 0, context);
+
+      assert.strictEqual(proxy.eventCount, 1);
+
+      proxy.trigger('test:trigger');
+      eventbus.trigger('test:trigger');
+
+      proxy.trigger('test:trigger2');
+
+      proxy.off(void 0, void 0, callbacks);
+
+      assert.strictEqual(proxy.eventCount, 0);
+
+      proxy.trigger('test:trigger2');
+      eventbus.trigger('test:trigger2');
+
+      assert.strictEqual(callbacks.testTriggerCount, 6);
    });
 
    it('trigger (destroy)', () =>
@@ -49,18 +156,24 @@ describe('EventProxy', () =>
 
       proxy.on('test:trigger', () => { callbacks.testTriggerCount++; });
       proxy.on('test:trigger2', () => { callbacks.testTriggerCount++; });
+      eventbus.on('test:trigger3', () => { callbacks.testTriggerCount++; });
 
       proxy.trigger('test:trigger');
+      proxy.trigger('test:trigger2');
+      proxy.trigger('test:trigger3');
+      eventbus.trigger('test:trigger');
       eventbus.trigger('test:trigger2');
+      eventbus.trigger('test:trigger3');
 
-      assert(callbacks.testTriggerCount === 2);
+      assert.strictEqual(callbacks.testTriggerCount, 6);
 
       proxy.destroy();
 
       eventbus.trigger('test:trigger');
       eventbus.trigger('test:trigger2');
+      eventbus.trigger('test:trigger3');
 
-      assert(callbacks.testTriggerCount === 2);
+      assert.strictEqual(callbacks.testTriggerCount, 7);
 
       const testError = (err) =>
       {
@@ -96,7 +209,7 @@ describe('EventProxy', () =>
       try { proxy.triggerSync('test:trigger'); }
       catch (err) { testError(err); }
 
-      assert(callbacks.testTriggerCount === 2);
+      assert(callbacks.testTriggerCount, 7);
    });
 
    it('trigger (once)', () =>

@@ -11,11 +11,10 @@ import TyphonEvents from './TyphonEvents.js';
  * if they had full control. IE This allows to plugin system to guarantee no dangling listeners.
  *
  * EventProxy provides the on / off, once, and trigger methods with the same signatures as found in
- * TyphonEvents / Events. However, the proxy has an internal Events instance which is used to proxy between the target
- * eventbus which is passed in from the constructor. All registration methods (on / off / once) proxy through the
- * internal Events instance using 'listenTo', 'listenToOnce', and 'stopListening'. In addition there is a `destroy`
- * method which will unregister all of proxies events and remove references to the managed eventbus. Any further usage
- * of a destroyed EventProxy instance results in a ReferenceError thrown.
+ * TyphonEvents / Events. However, the proxy tracks all added event bindings which is used to proxy between the target
+ * eventbus which is passed in from the constructor. All registration methods (on / off / once) proxy. In addition
+ * there is a `destroy` method which will unregister all of proxied events and remove references to the managed
+ * eventbus. Any further usage of a destroyed EventProxy instance results in a ReferenceError thrown.
  */
 export default class EventProxy
 {
@@ -39,11 +38,11 @@ export default class EventProxy
       this._eventbus = eventbus;
 
       /**
-       * Stores the proxy instance which manages all event binding with the target eventbus.
-       * @type {TyphonEvents}
+       * Stores all proxied event bindings.
+       * @type {Array<{name: string, callback: function, context: *}>}
        * @private
        */
-      this._proxy = new TyphonEvents();
+      this._events = [];
    }
 
    /**
@@ -52,14 +51,35 @@ export default class EventProxy
     */
    destroy()
    {
-      if (this._proxy === null || this._eventbus === null)
+      if (this._eventbus === null)
       {
          throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
-      this._proxy.stopListening(this._eventbus);
+      for (const event of this._events) { this._eventbus.off(event.name, event.callback, event.context); }
+
+      this._events = [];
+
       this._eventbus = null;
-      this._proxy = null;
+   }
+
+   /**
+    * Returns the current proxied event count.
+    *
+    * @returns {Number}
+    */
+   get eventCount() { return this._events.length; }
+
+   /**
+    * Iterates over all proxied events invoking a callback with the event data stored.
+    *
+    * @param {function} callback - Callback invoked for each proxied event stored.
+    */
+   forEachEvent(callback)
+   {
+      if (typeof callback !== 'function') { throw new TypeError(`'callback' is not a 'function'.`); }
+
+      for (const event of this._events) { callback(event.name, event.callback, event.context); }
    }
 
    /**
@@ -75,24 +95,60 @@ export default class EventProxy
    }
 
    /**
-    * Remove a previously-bound callback function from an object. This is proxied through `stopListening` of an
-    * internal Events instance instead of directly modifying the target eventbus.
+    * Remove a previously-bound proxied event binding.
     *
     * Please see {@link Events#off}.
     *
-    * @param {string}   name     - Event name(s)
-    * @param {function} callback - Event callback function
-    * @param {object}   context  - Event context
+    * @param {string}   [name]     - Event name(s)
+    *
+    * @param {function} [callback] - Event callback function
+    *
+    * @param {object}   [context]  - Event context
+    *
     * @returns {EventProxy}
     */
-   off(name, callback = void 0, context = void 0)
+   off(name = void 0, callback = void 0, context = void 0)
    {
-      if (this._proxy === null || this._eventbus === null)
+      if (this._eventbus === null)
       {
          throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
-      this._proxy.stopListening(this._eventbus, name, callback, context);
+      const hasName = typeof name !== 'undefined' && name !== null;
+      const hasCallback = typeof callback !== 'undefined' && callback !== null;
+      const hasContext = typeof context !== 'undefined' && context !== null;
+
+      // Remove all events if `off()` is invoked.
+      if (!hasName && !hasCallback && !hasContext)
+      {
+         for (const event of this._events) { this._eventbus.off(event.name, event.callback, event.context); }
+         this._events = [];
+      }
+      else
+      {
+         const values = {};
+         if (hasName) { values.name = name; }
+         if (hasCallback) { values.callback = callback; }
+         if (hasContext) { values.context = context; }
+
+         for (let cntr = this._events.length; --cntr >= 0;)
+         {
+            const event = this._events[cntr];
+
+            let foundMatch = true;
+
+            for (const key in values)
+            {
+               if (event[key] !== values[key]) { foundMatch = false; break; }
+            }
+
+            if (foundMatch)
+            {
+               this._eventbus.off(values.name, values.callback, values.context);
+               this._events.splice(cntr, 1);
+            }
+         }
+      }
 
       return this;
    }
@@ -114,12 +170,14 @@ export default class EventProxy
     */
    on(name, callback, context = void 0)
    {
-      if (this._proxy === null || this._eventbus === null)
+      if (this._eventbus === null)
       {
          throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
-      this._proxy.listenTo(this._eventbus, name, callback, context);
+      this._eventbus.on(name, callback, context);
+
+      this._events.push({ name, callback, context });
 
       return this;
    }
@@ -142,12 +200,12 @@ export default class EventProxy
     */
    once(name, callback, context = void 0)
    {
-      if (this._proxy === null || this._eventbus === null)
+      if (this._eventbus === null)
       {
          throw new ReferenceError('This EventProxy instance has been destroyed.');
       }
 
-      this._proxy.listenToOnce(this._eventbus, name, callback, context);
+      this._eventbus.once(name, callback, context);
 
       return this;
    }

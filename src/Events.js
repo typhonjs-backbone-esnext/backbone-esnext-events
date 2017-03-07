@@ -76,7 +76,7 @@ export default class Events
     * @param {object}   [context]   - Optional: event context
     * @returns {Events}
     */
-   listenTo(obj, name, callback, context = void 0)
+   listenTo(obj, name, callback, context = this)
    {
       if (!obj) { return this; }
       const id = obj._listenId || (obj._listenId = s_UNIQUE_ID('l'));
@@ -107,7 +107,7 @@ export default class Events
     * @param {object}   [context=this] - Optional: event context
     * @returns {Events}
     */
-   listenToOnce(obj, name, callback, context = void 0)
+   listenToOnce(obj, name, callback, context = this)
    {
       // Map the event into a `{event: once}` object.
       const events = s_EVENTS_API(s_ONCE_MAP, {}, name, callback, this.stopListening.bind(this, obj));
@@ -239,7 +239,7 @@ export default class Events
     * @param {object}   [context=this] - Optional: event context
     * @returns {Events}
     */
-   stopListening(obj, name = void 0, callback = void 0, context = void 0)
+   stopListening(obj, name = void 0, callback = void 0, context = this)
    {
       const listeningTo = this._listeningTo;
       if (!listeningTo) { return this; }
