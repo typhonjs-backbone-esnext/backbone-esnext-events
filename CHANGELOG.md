@@ -1,4 +1,4 @@
-## 0.3.2 (2017-03-09)
+## 0.3.3 (2017-03-09)
 - Added eventCount to TyphonEvents and EventProxy.
 - Added getEventNames to TyphonEvents and EventProxy.
 - Added forEachEvent to TyphonEvents and EventProxy.
