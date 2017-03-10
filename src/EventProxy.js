@@ -209,34 +209,6 @@ export default class EventProxy
    }
 
    /**
-    * Just like `on`, but causes the bound callback to fire only once before being removed. Handy for saying "the next
-    * time that X happens, do this". When multiple events are passed in using the space separated syntax, the event
-    * will fire once for every event you passed in, not once for a combination of all events
-    *
-    * This is proxied through `listenToOnce` of an internal Events instance instead of directly modifying the target
-    * eventbus.
-    *
-    * Please see {@link Events#once}.
-    *
-    * @param {string}   name     - Event name(s)
-    * @param {function} callback - Event callback function
-    * @param {object}   context  - Event context
-    *
-    * @returns {EventProxy}
-    */
-   once(name, callback, context = void 0)
-   {
-      if (this._eventbus === null)
-      {
-         throw new ReferenceError('This EventProxy instance has been destroyed.');
-      }
-
-      this._eventbus.once(name, callback, context);
-
-      return this;
-   }
-
-   /**
     * Trigger callbacks for the given event, or space-delimited list of events. Subsequent arguments to trigger will be
     * passed along to the event callbacks.
     *
