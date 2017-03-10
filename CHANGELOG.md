@@ -1,7 +1,9 @@
 ## 0.3.2 (2017-03-09)
+- Added eventCount to TyphonEvents and EventProxy.
 - Added getEventNames to TyphonEvents and EventProxy.
 - Added forEachEvent to TyphonEvents and EventProxy.
 - Added createEventProxy to EventProxy.
+- Removed once from EventProxy.
 
 ## 0.3.2 (2017-03-06)
 - Fixed EventProxy for not properly unregistering events. 
