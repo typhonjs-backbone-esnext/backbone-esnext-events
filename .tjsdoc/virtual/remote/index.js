@@ -1,5 +1,9 @@
 var code = `
 /**
+ * @external {Events} https://docs.typhonjs.io/typhonjs-backbone-esnext/backbone-esnext-events/class/src/Events.js~Events.html
+ */
+
+/**
  * @external {EventProxy} https://docs.typhonjs.io/typhonjs-backbone-esnext/backbone-esnext-events/class/src/EventProxy.js~EventProxy.html
  */
 
