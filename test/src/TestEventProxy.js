@@ -1,6 +1,5 @@
 import { assert }    from 'chai';
 
-import EventProxy    from '../../src/EventProxy';
 import TyphonEvents  from '../../src/TyphonEvents';
 
 /* eslint-disable no-undef */
@@ -207,6 +206,9 @@ describe('EventProxy', () =>
       proxy.on('test:trigger2', () => { callbacks.testTriggerCount++; });
       eventbus.on('test:trigger3', () => { callbacks.testTriggerCount++; });
 
+      assert.strictEqual(eventbus.eventCount, 3);
+      assert.strictEqual(proxy.eventCount, 2);
+
       proxy.trigger('test:trigger');
       proxy.trigger('test:trigger2');
       proxy.trigger('test:trigger3');
@@ -218,6 +220,9 @@ describe('EventProxy', () =>
 
       proxy.destroy();
 
+      assert.strictEqual(eventbus.eventCount, 1);
+      assert.strictEqual(proxy.eventCount, 0);
+
       eventbus.trigger('test:trigger');
       eventbus.trigger('test:trigger2');
       eventbus.trigger('test:trigger3');
@@ -227,7 +232,7 @@ describe('EventProxy', () =>
       const testError = (err) =>
       {
          assert(err instanceof ReferenceError);
-         assert(err.message === 'This EventProxy instance has been destroyed.');
+         assert.strictEqual(err.message, 'This EventProxy instance has been destroyed.');
       };
 
       // Ensure that proxy is destroyed and all methods throw a ReferenceError.
@@ -243,9 +248,6 @@ describe('EventProxy', () =>
       try { proxy.on('test:bogus', testError); }
       catch (err) { testError(err); }
 
-      try { proxy.once('test:bogus', testError); }
-      catch (err) { testError(err); }
-
       try { proxy.trigger('test:trigger'); }
       catch (err) { testError(err); }
 
@@ -258,23 +260,7 @@ describe('EventProxy', () =>
       try { proxy.triggerSync('test:trigger'); }
       catch (err) { testError(err); }
 
-      assert(callbacks.testTriggerCount, 7);
-   });
-
-   it('trigger (once)', () =>
-   {
-      callbacks.testTriggerCount = 0;
-
-      proxy.once('test:trigger', () => { callbacks.testTriggerCount++; });
-      proxy.once('test:trigger2', () => { callbacks.testTriggerCount++; });
-
-      proxy.trigger('test:trigger');
-      eventbus.trigger('test:trigger2');
-
-      proxy.trigger('test:trigger');
-      eventbus.trigger('test:trigger2');
-
-      assert(callbacks.testTriggerCount === 2);
+      assert.strictEqual(callbacks.testTriggerCount, 7);
    });
 
    it('triggerDefer', (done) =>
@@ -284,45 +270,39 @@ describe('EventProxy', () =>
       proxy.on('test:trigger', () => { callbacks.testTriggerCount++; });
       proxy.on('test:trigger2', () => { callbacks.testTriggerCount++; });
 
+      assert.strictEqual(eventbus.eventCount, 2);
+      assert.strictEqual(proxy.eventCount, 2);
+
       proxy.triggerDefer('test:trigger');
       eventbus.triggerDefer('test:trigger2');
 
       setTimeout(() =>
       {
-         assert(callbacks.testTriggerCount === 2);
+         assert.strictEqual(callbacks.testTriggerCount, 2);
          done();
       }, 0);
-   });
-
-   it('triggerDefer (once)', (done) =>
-   {
-      callbacks.testTriggerOnce = 0;
-
-      proxy.once('test:trigger:once', () => { callbacks.testTriggerOnce++; });
-      proxy.on('test:trigger:verify', () => { assert(callbacks.testTriggerOnce === 1); done(); });
-
-      proxy.triggerDefer('test:trigger:once');
-      proxy.triggerDefer('test:trigger:once');
-      proxy.triggerDefer('test:trigger:verify');
    });
 
    it('triggerSync-0', () =>
    {
       const result = proxy.triggerSync('test:trigger:sync0');
 
-      assert(!Array.isArray(result));
-      assert(result === void 0);
+      assert.isNotArray(result);
+      assert.isUndefined(result);
    });
 
    it('triggerSync-1', () =>
    {
       proxy.on('test:trigger:sync1', () => { callbacks.testTriggerSync1 = true; return 'foo'; });
 
+      assert.strictEqual(eventbus.eventCount, 1);
+      assert.strictEqual(proxy.eventCount, 1);
+
       const result = eventbus.triggerSync('test:trigger:sync1');
 
-      assert(callbacks.testTriggerSync1);
-      assert(!Array.isArray(result));
-      assert(result === 'foo');
+      assert.isTrue(callbacks.testTriggerSync1);
+      assert.isNotArray(result);
+      assert.strictEqual(result, 'foo');
    });
 
    it('triggerSync-2', () =>
@@ -330,39 +310,36 @@ describe('EventProxy', () =>
       proxy.on('test:trigger:sync2', () => { callbacks.testTriggerSync2A = true; return 'foo'; });
       proxy.on('test:trigger:sync2', () => { callbacks.testTriggerSync2B = true; return 'bar'; });
 
+      assert.strictEqual(eventbus.eventCount, 2);
+      assert.strictEqual(proxy.eventCount, 2);
+
       const results = eventbus.triggerSync('test:trigger:sync2');
 
-      assert(callbacks.testTriggerSync2A);
-      assert(callbacks.testTriggerSync2B);
-      assert(Array.isArray(results));
-      assert(results.length === 2);
-      assert(results[0] === 'foo' && results[1] === 'bar');
+      assert.isTrue(callbacks.testTriggerSync2A);
+      assert.isTrue(callbacks.testTriggerSync2B);
+      assert.isArray(results);
+      assert.strictEqual(results.length, 2);
+      assert.strictEqual(results[0], 'foo');
+      assert.strictEqual(results[1], 'bar');
    });
 
    it('triggerSync (on / off)', () =>
    {
+      assert.strictEqual(eventbus.eventCount, 0);
+      assert.strictEqual(proxy.eventCount, 0);
+
       proxy.on('test:trigger:sync:off', () => { callbacks.testTriggerSyncOff = true; return true; });
+
+      assert.strictEqual(eventbus.eventCount, 1);
+      assert.strictEqual(proxy.eventCount, 1);
+
       proxy.off('test:trigger:sync:off');
-      assert(eventbus.triggerSync('test:trigger:sync:off') === void 0);
-      assert(callbacks.testTriggerSyncOff === void 0);
-   });
 
-   it('triggerSync-1 (once)', () =>
-   {
-      callbacks.testTriggerOnce = 0;
+      assert.strictEqual(eventbus.eventCount, 0);
+      assert.strictEqual(proxy.eventCount, 0);
 
-      proxy.once('test:trigger:once', () => { callbacks.testTriggerOnce++; return 'foo'; });
-
-      let result = eventbus.triggerSync('test:trigger:once');
-
-      assert(callbacks.testTriggerOnce === 1);
-      assert(!Array.isArray(result));
-      assert(result === 'foo');
-
-      result = eventbus.triggerSync('test:trigger:once');
-
-      assert(callbacks.testTriggerOnce === 1);
-      assert(result === void 0);
+      assert.isUndefined(eventbus.triggerSync('test:trigger:sync:off'));
+      assert.isUndefined(callbacks.testTriggerSyncOff);
    });
 
    it('triggerSync (Promise)', (done) =>
@@ -373,14 +350,17 @@ describe('EventProxy', () =>
          return Promise.resolve('foobar');
       });
 
+      assert.strictEqual(eventbus.eventCount, 1);
+      assert.strictEqual(proxy.eventCount, 1);
+
       const promise = eventbus.triggerSync('test:trigger:sync:then');
 
       assert(promise instanceof Promise);
 
       promise.then((result) =>
       {
-         assert(callbacks.testTriggerSyncThen);
-         assert(result === 'foobar');
+         assert.isTrue(callbacks.testTriggerSyncThen);
+         assert.strictEqual(result, 'foobar');
          done();
       });
    });
@@ -390,6 +370,9 @@ describe('EventProxy', () =>
       proxy.on('test:trigger:async', () => { callbacks.testTriggerAsync = true; return 'foo'; });
       proxy.on('test:trigger:async', () => { callbacks.testTriggerAsync2 = true; return 'bar'; });
 
+      assert.strictEqual(eventbus.eventCount, 2);
+      assert.strictEqual(proxy.eventCount, 2);
+
       const promise = eventbus.triggerAsync('test:trigger:async');
 
       assert(promise instanceof Promise);
@@ -397,41 +380,11 @@ describe('EventProxy', () =>
       // triggerAsync resolves all Promises by Promise.all() so result is an array.
       promise.then((result) =>
       {
-         assert(callbacks.testTriggerAsync);
-         assert(callbacks.testTriggerAsync2);
-         assert(result[0] === 'foo');
-         assert(result[1] === 'bar');
+         assert.isTrue(callbacks.testTriggerAsync);
+         assert.isTrue(callbacks.testTriggerAsync2);
+         assert.strictEqual(result[0], 'foo');
+         assert.strictEqual(result[1], 'bar');
          done();
-      });
-   });
-
-   it('triggerAsync (once)', (done) =>
-   {
-      callbacks.testTriggerOnce = 0;
-
-      proxy.once('test:trigger:once', () => { callbacks.testTriggerOnce++; return 'foo'; });
-
-      const promise = eventbus.triggerAsync('test:trigger:once');
-
-      assert(callbacks.testTriggerOnce === 1);
-      assert(promise instanceof Promise);
-
-      const promise2 = eventbus.triggerAsync('test:trigger:once');
-
-      assert(callbacks.testTriggerOnce === 1);
-      assert(promise2 instanceof Promise);
-
-      promise2.then((result) =>
-      {
-         assert(result === void 0);
-
-         // triggerAsync resolves all Promises by Promise.all() or Promise.resolve() so result is a string.
-         promise.then((result) =>
-         {
-            assert(callbacks.testTriggerOnce === 1);
-            assert(result === 'foo');
-            done();
-         });
       });
    });
 });
