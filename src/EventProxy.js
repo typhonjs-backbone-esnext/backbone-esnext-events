@@ -46,6 +46,16 @@ export default class EventProxy
    }
 
    /**
+    * Creates a new EventProxy from the target eventbus of this proxy.
+    *
+    * @returns {EventProxy}
+    */
+   createEventProxy()
+   {
+      return new EventProxy(this._eventbus);
+   }
+
+   /**
     * Unregisters all proxied events from the target eventbus and removes any local references. All subsequent calls
     * after `destroy` has been called result in a ReferenceError thrown.
     */
@@ -69,6 +79,22 @@ export default class EventProxy
     * @returns {Number}
     */
    get eventCount() { return this._events.length; }
+
+   /**
+    * Returns the event names of proxied event listeners.
+    *
+    * @returns {string[]}
+    */
+   getEventNames()
+   {
+      if (!this._events) { return []; }
+
+      const eventNames = {};
+
+      for (const event of this._events) { eventNames[event.name] = true; }
+
+      return Object.keys(eventNames);
+   }
 
    /**
     * Iterates over all proxied events invoking a callback with the event data stored.

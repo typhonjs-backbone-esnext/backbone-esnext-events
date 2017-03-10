@@ -13,7 +13,7 @@ describe('EventProxy', () =>
    {
       callbacks = {};
       eventbus = new TyphonEvents();
-      proxy = new EventProxy(eventbus);
+      proxy = eventbus.createEventProxy();
    });
 
    it('get name', () =>
@@ -21,6 +21,55 @@ describe('EventProxy', () =>
       eventbus.setEventbusName('testname');
 
       assert(proxy.getEventbusName() === 'testname');
+   });
+
+   it('forEachEvent', () =>
+   {
+      const callback1 = () => {};
+      const callback2 = () => {};
+      const callback3 = () => {};
+      const callback3A = () => {};
+
+      const context1 = {};
+      const context2 = {};
+      const context3 = {};
+      const context3A = {};
+
+      const allCallbacks = [callback1, callback2, callback3, callback3A];
+      const allContexts = [context1, context2, context3, context3A];
+      const allNames = ['test:trigger', 'test:trigger2', 'test:trigger3', 'test:trigger3'];
+
+      // Proxy will not list this event on the main eventbus.
+      eventbus.on('can:not:see:this', () => {});
+
+      proxy.on('test:trigger', callback1, context1);
+      proxy.on('test:trigger2', callback2, context2);
+      proxy.on('test:trigger3', callback3, context3);
+      proxy.on('test:trigger3', callback3A, context3A);
+
+      let cntr = 0;
+
+      proxy.forEachEvent((name, callback, context) =>
+      {
+         assert.strictEqual(name, allNames[cntr]);
+         assert.strictEqual(callback, allCallbacks[cntr]);
+         assert.strictEqual(context, allContexts[cntr]);
+         cntr++;
+      });
+   });
+
+   it('getEventNames', () =>
+   {
+      eventbus.on('can:not:see:this', () => {});
+
+      proxy.on('test:trigger', () => {});
+      proxy.on('test:trigger2', () => {});
+      proxy.on('test:trigger3', () => {});
+      proxy.on('test:trigger3', () => {});
+
+      const eventNames = proxy.getEventNames();
+
+      assert.strictEqual(JSON.stringify(eventNames), '["test:trigger","test:trigger2","test:trigger3"]');
    });
 
    it('trigger (on / off)', () =>

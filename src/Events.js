@@ -153,7 +153,7 @@ export default class Events
 
       /**
        * @type {*}
-       * @private
+       * @protected
        */
       this._events = s_EVENTS_API(s_OFF_API, this._events, name, callback, { context, listeners: this._listeners });
 

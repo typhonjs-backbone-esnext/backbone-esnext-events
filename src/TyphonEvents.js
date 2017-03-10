@@ -1,4 +1,5 @@
-import Events  from './Events.js';
+import Events     from './Events.js';
+import EventProxy from './EventProxy.js';
 
 /**
  * TyphonEvents adds new functionality for trigger events. The following are new trigger mechanisms:
@@ -28,6 +29,39 @@ export default class TyphonEvents extends Events
    }
 
    /**
+    * Creates an EventProxy wrapping this events instance. An EventProxy proxies events allowing all listeners added
+    * to be easily removed from the wrapped Events instance.
+    *
+    * @returns {EventProxy}
+    */
+   createEventProxy()
+   {
+      return new EventProxy(this);
+   }
+
+   /**
+    * Iterates over all stored events invoking a callback with the event data stored.
+    *
+    * @param {function} callback - Callback invoked for each proxied event stored.
+    */
+   forEachEvent(callback)
+   {
+      /* istanbul ignore if */
+      if (!this._events) { return; }
+
+      /* istanbul ignore if */
+      if (typeof callback !== 'function') { throw new TypeError(`'callback' is not a 'function'.`); }
+
+      for (const name in this._events)
+      {
+         for (const event of this._events[name])
+         {
+            callback(name, event.callback, event.ctx);
+         }
+      }
+   }
+
+   /**
     * Returns the current eventbusName.
     *
     * @returns {string|*}
@@ -35,6 +69,19 @@ export default class TyphonEvents extends Events
    getEventbusName()
    {
       return this._eventbusName;
+   }
+
+   /**
+    * Returns the event names of registered event listeners.
+    *
+    * @returns {string[]}
+    */
+   getEventNames()
+   {
+      /* istanbul ignore if */
+      if (!this._events) { return []; }
+
+      return Object.keys(this._events);
    }
 
    /**
