@@ -62,6 +62,20 @@ export default class TyphonEvents extends Events
    }
 
    /**
+    * Returns the current proxied event count.
+    *
+    * @returns {Number}
+    */
+   get eventCount()
+   {
+      let count = 0;
+
+      for (const name in this._events) { count += this._events[name].length; }
+
+      return count;
+   }
+
+   /**
     * Returns the current eventbusName.
     *
     * @returns {string|*}
