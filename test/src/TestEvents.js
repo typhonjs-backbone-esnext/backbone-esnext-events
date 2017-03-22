@@ -72,6 +72,26 @@ describe('Events', () =>
       assert.isTrue(callbacks.testTrigger);
    });
 
+   it('trigger (on / off)', () =>
+   {
+      callbacks.testTrigger = 0;
+      eventbus.on('test:trigger', () => { callbacks.testTrigger++; });
+      eventbus.trigger('test:trigger');
+
+      assert.strictEqual(eventbus.eventCount, 1);
+
+      assert.strictEqual(callbacks.testTrigger, 1);
+
+      eventbus.off();
+
+      assert.strictEqual(eventbus.eventCount, 0);
+
+      eventbus.trigger('test:trigger');
+      eventbus.trigger('test:trigger');
+
+      assert.strictEqual(callbacks.testTrigger, 1);
+   });
+
    it('trigger (once)', () =>
    {
       callbacks.testTriggerOnce = 0;
