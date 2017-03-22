@@ -382,7 +382,7 @@ const s_OFF_API = (events, name, callback, options) =>
    const context = options.context, listeners = options.listeners;
 
    // Delete all events listeners and "drop" events.
-   if (!name && !callback && !context)
+   if (!name && !callback && !context && listeners)
    {
       const ids = Object.keys(listeners);
       for (; i < ids.length; i++)
