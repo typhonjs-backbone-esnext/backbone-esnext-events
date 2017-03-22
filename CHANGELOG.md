@@ -1,3 +1,6 @@
+## 0.3.4 (2017-03-22)
+- Fixed `off()` with no parameters issue. 
+
 ## 0.3.3 (2017-03-09)
 - Added eventCount to TyphonEvents and EventProxy.
 - Added getEventNames to TyphonEvents and EventProxy.
