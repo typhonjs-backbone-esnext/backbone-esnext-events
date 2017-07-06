@@ -72,6 +72,33 @@ describe('Events', () =>
       assert.isTrue(callbacks.testTrigger);
    });
 
+   it('object composition - trigger (on / off)', () =>
+   {
+      const anObject = {
+         events: new TyphonEvents(),
+         register: function() { this.events.on('test:trigger', this.handler, this); },
+         testTrigger: 0,
+         triggerTest: function() { this.events.trigger('test:trigger'); },
+         handler: function() { this.testTrigger++; }
+      };
+
+      anObject.register();
+      anObject.triggerTest();
+
+      assert.strictEqual(anObject.events.eventCount, 1);
+
+      assert.strictEqual(anObject.testTrigger, 1);
+
+      anObject.events.off();
+
+      assert.strictEqual(anObject.events.eventCount, 0);
+
+      anObject.triggerTest();
+      anObject.triggerTest();
+
+      assert.strictEqual(anObject.testTrigger, 1);
+   });
+
    it('trigger (on / off)', () =>
    {
       callbacks.testTrigger = 0;
