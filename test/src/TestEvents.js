@@ -3,6 +3,17 @@ import TyphonEvents  from '../../src/TyphonEvents';
 
 /* eslint-disable no-undef */
 
+const s_CREATE_TIMED_FUNC = (func, timeout = 1000) =>
+{
+   return () =>
+   {
+      return new Promise((resolve, reject) =>
+      {
+         setTimeout(() => func(resolve, reject), timeout);
+      });
+   };
+};
+
 describe('Events', () =>
 {
    let callbacks, eventbus;
@@ -458,10 +469,13 @@ describe('Events', () =>
       });
    });
 
-   it('triggerAsync', (done) =>
+   it('promise - triggerAsync', (done) =>
    {
-      eventbus.on('test:trigger:async', () => { callbacks.testTriggerAsync = true; return 'foo'; });
-      eventbus.on('test:trigger:async', () => { callbacks.testTriggerAsync2 = true; return 'bar'; });
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerAsync = true; resolve('foo'); }));
+
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerAsync2 = true; resolve('bar'); }));
 
       assert.strictEqual(eventbus.eventCount, 2);
 
@@ -480,13 +494,14 @@ describe('Events', () =>
       });
    });
 
-   it('triggerAsync (once)', (done) =>
+   it('promise - triggerAsync (once)', (done) =>
    {
       callbacks.testTriggerOnce = 0;
 
       assert.strictEqual(eventbus.eventCount, 0);
 
-      eventbus.once('test:trigger:once', () => { callbacks.testTriggerOnce++; return 'foo'; });
+      eventbus.once('test:trigger:once',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerOnce++; resolve('foo'); }));
 
       assert.strictEqual(eventbus.eventCount, 1);
 
@@ -494,12 +509,10 @@ describe('Events', () =>
 
       assert.strictEqual(eventbus.eventCount, 0);
 
-      assert.strictEqual(callbacks.testTriggerOnce, 1);
       assert(promise instanceof Promise);
 
       const promise2 = eventbus.triggerAsync('test:trigger:once');
 
-      assert.strictEqual(callbacks.testTriggerOnce, 1);
       assert(promise2 instanceof Promise);
 
       // triggerAsync resolves all Promises by Promise.all() or Promise.resolve() so result is a string.
@@ -511,13 +524,14 @@ describe('Events', () =>
       });
    });
 
-   it('triggerAsync (listenTo)', (done) =>
+   it('promise - triggerAsync (listenTo)', (done) =>
    {
       const test = new TyphonEvents();
 
       callbacks.testTriggerCount = 0;
 
-      test.listenTo(eventbus, 'test:trigger:async', () => { callbacks.testTriggerCount++; return 'foo'; });
+      test.listenTo(eventbus, 'test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerCount++; resolve('foo'); }));
 
       assert.strictEqual(eventbus.eventCount, 1);
 
@@ -529,24 +543,26 @@ describe('Events', () =>
       {
          assert.strictEqual(callbacks.testTriggerCount, 1);
          assert.strictEqual(result, 'foo');
-      });
-
-      test.stopListening(eventbus, 'test:trigger:async');
-
-      assert.strictEqual(eventbus.eventCount, 0);
-
-      promise = eventbus.triggerAsync('test:trigger:async');
-
-      promise.then((result) =>
+      }).then(() =>
       {
-         assert.isUndefined(result);
-         assert.strictEqual(callbacks.testTriggerCount, 1);
-         done();
+         test.stopListening(eventbus, 'test:trigger:async');
+
+         assert.strictEqual(eventbus.eventCount, 0);
+
+         promise = eventbus.triggerAsync('test:trigger:async');
+         assert(promise instanceof Promise);
+
+         promise.then((result) =>
+         {
+            assert.isUndefined(result);
+            assert.strictEqual(callbacks.testTriggerCount, 1);
+            done();
+         });
       });
    });
 
 
-   it('triggerAsync (listenToOnce)', (done) =>
+   it('promise - triggerAsync (listenToOnce)', (done) =>
    {
       const test = new TyphonEvents();
 
@@ -554,20 +570,18 @@ describe('Events', () =>
 
       assert.strictEqual(eventbus.eventCount, 0);
 
-      test.listenToOnce(eventbus, 'test:trigger:once', () => { callbacks.testTriggerOnce++; return 'foo'; });
+      test.listenToOnce(eventbus, 'test:trigger:once',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerOnce++; resolve('foo'); }));
 
       assert.strictEqual(eventbus.eventCount, 1);
 
       const promise = eventbus.triggerAsync('test:trigger:once');
 
-      assert.strictEqual(eventbus.eventCount, 0);
-
-      assert.strictEqual(callbacks.testTriggerOnce, 1);
       assert(promise instanceof Promise);
+      assert.strictEqual(eventbus.eventCount, 0);
 
       const promise2 = eventbus.triggerAsync('test:trigger:once');
 
-      assert.strictEqual(callbacks.testTriggerOnce, 1);
       assert(promise2 instanceof Promise);
 
       // triggerAsync resolves all Promises by Promise.all() or Promise.resolve() so result is a string.
@@ -577,5 +591,144 @@ describe('Events', () =>
          assert.strictEqual(result, 'foo');
          done();
       });
+   });
+
+   it('async / await - triggerAsync', async () =>
+   {
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerAsync = true; resolve('foo'); }));
+
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerAsync2 = true; resolve('bar'); }));
+
+      assert.strictEqual(eventbus.eventCount, 2);
+
+      const result = await eventbus.triggerAsync('test:trigger:async');
+
+      assert.isTrue(callbacks.testTriggerAsync);
+      assert.isTrue(callbacks.testTriggerAsync2);
+      assert.strictEqual(result[0], 'foo');
+      assert.strictEqual(result[1], 'bar');
+   });
+
+   it('async / await - triggerAsync (once)', async () =>
+   {
+      callbacks.testTriggerOnce = 0;
+
+      assert.strictEqual(eventbus.eventCount, 0);
+
+      eventbus.once('test:trigger:once',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerOnce++; resolve('foo'); }));
+
+      assert.strictEqual(eventbus.eventCount, 1);
+
+      const result = await eventbus.triggerAsync('test:trigger:once');
+
+      assert.strictEqual(eventbus.eventCount, 0);
+
+      assert.strictEqual(callbacks.testTriggerOnce, 1);
+
+      const result2 = await eventbus.triggerAsync('test:trigger:once');
+
+      assert.strictEqual(callbacks.testTriggerOnce, 1);
+
+      assert.isUndefined(result2);
+
+      assert.strictEqual(callbacks.testTriggerOnce, 1);
+      assert.strictEqual(result, 'foo');
+   });
+
+   it('async / await - triggerAsync (listenTo)', async () =>
+   {
+      const test = new TyphonEvents();
+
+      callbacks.testTriggerCount = 0;
+
+      test.listenTo(eventbus, 'test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerCount++; resolve('foo'); }));
+
+      assert.strictEqual(eventbus.eventCount, 1);
+
+      let result = await eventbus.triggerAsync('test:trigger:async');
+
+      assert.strictEqual(callbacks.testTriggerCount, 1);
+      assert.strictEqual(result, 'foo');
+
+      test.stopListening(eventbus, 'test:trigger:async');
+
+      assert.strictEqual(eventbus.eventCount, 0);
+
+      result = await eventbus.triggerAsync('test:trigger:async');
+
+      assert.isUndefined(result);
+      assert.strictEqual(callbacks.testTriggerCount, 1);
+   });
+
+
+   it('async / await - triggerAsync (listenToOnce)', async () =>
+   {
+      const test = new TyphonEvents();
+
+      callbacks.testTriggerOnce = 0;
+
+      assert.strictEqual(eventbus.eventCount, 0);
+
+      // test.listenToOnce(eventbus, 'test:trigger:once', () => { callbacks.testTriggerOnce++; return 'foo'; });
+      test.listenToOnce(eventbus, 'test:trigger:once',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerOnce++; resolve('foo'); }));
+
+      assert.strictEqual(eventbus.eventCount, 1);
+
+      const result = await eventbus.triggerAsync('test:trigger:once');
+
+      assert.strictEqual(eventbus.eventCount, 0);
+
+      assert.strictEqual(callbacks.testTriggerOnce, 1);
+
+      const result2 = await eventbus.triggerAsync('test:trigger:once');
+
+      assert.strictEqual(callbacks.testTriggerOnce, 1);
+      assert.isUndefined(result2);
+
+      // triggerAsync resolves all Promises by Promise.all() or Promise.resolve() so result is a string.
+      assert.strictEqual(callbacks.testTriggerOnce, 1);
+      assert.strictEqual(result, 'foo');
+   });
+
+   it('async / await - triggerAsync - try / catch reject error', async () =>
+   {
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerAsync = true; resolve('foo'); }));
+
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve, reject) => { reject(new Error('An Error!')); }));
+
+      assert.strictEqual(eventbus.eventCount, 2);
+
+      try
+      {
+         await eventbus.triggerAsync('test:trigger:async');
+
+         throw new Error('No error thrown: should not reach here!');
+      }
+      catch (err) { /* nop */ }
+   });
+
+   it('async / await - triggerAsync - try / catch sync error', async () =>
+   {
+      eventbus.on('test:trigger:async',
+       s_CREATE_TIMED_FUNC((resolve) => { callbacks.testTriggerAsync = true; resolve('foo'); }));
+
+      eventbus.on('test:trigger:async', () => { throw new Error('An Error!'); });
+
+      assert.strictEqual(eventbus.eventCount, 2);
+
+      try
+      {
+         await eventbus.triggerAsync('test:trigger:async');
+
+         throw new Error('No error thrown: should not reach here!');
+      }
+      catch (err) { /* nop */ }
    });
 });

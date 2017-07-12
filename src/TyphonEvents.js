@@ -125,7 +125,7 @@ export default class TyphonEvents extends Events
     * @param {string}   name  - Event name(s)
     * @returns {Promise}
     */
-   triggerAsync(name)
+   async triggerAsync(name)
    {
       /* istanbul ignore if */
       if (!this._events) { Promise.all([]); }
@@ -259,7 +259,7 @@ const s_TRIGGER_API = (iterateeTarget, objEvents, name, cb, args) =>
  * @param {Array<*>} args     -  Arguments supplied to `triggerAsync`.
  * @returns {Promise}
  */
-const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
+const s_TRIGGER_ASYNC_EVENTS = async (events, args) =>
 {
    let ev, i = -1;
    const a1 = args[0], a2 = args[1], a3 = args[2], l = events.length;
@@ -322,7 +322,7 @@ const s_TRIGGER_ASYNC_EVENTS = (events, args) =>
             break;
       }
    }
-   catch (error)
+   catch (error) // will catch synchronous event binding errors and reject again async errors.
    {
       return Promise.reject(error);
    }
