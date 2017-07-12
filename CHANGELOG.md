@@ -1,3 +1,6 @@
+## 0.3.5 (2017-07-12)
+- Added async / await tests and explicit 'async' keyword to triggerAsync
+
 ## 0.3.4 (2017-03-22)
 - Fixed `off()` with no parameters issue. 
 
