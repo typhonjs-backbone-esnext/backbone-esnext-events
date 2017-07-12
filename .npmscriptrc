@@ -19,6 +19,6 @@
       },
 
       "istanbul": { "command": "cover", "options": ["--include-all-sources --root src"] },
-      "mocha": { "source": "./test/src", "options": [ "--compilers js:babel-register", "-t 120000 --recursive" ] }
+      "mocha": { "source": "./test/src", "options": [ "--compilers js:babel-register", "-t 15000 --recursive" ] }
    }
 }
