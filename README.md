@@ -10,7 +10,9 @@
 [![Coverage](https://img.shields.io/codecov/c/github/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://codecov.io/github/typhonjs-backbone-esnext/backbone-esnext-events)
 [![Dependency Status](https://david-dm.org/typhonjs-backbone-esnext/backbone-esnext-events.svg)](https://david-dm.org/typhonjs-backbone-esnext/backbone-esnext-events)
 
-Separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos. It should be noted that there are no dependencies with backbone-esnext-events and it can be used independently in any project without pulling in Underscore like Backbone does. 
+For essential information pertaining to backbone-esnext please refer to [backbone-esnext](https://github.com/typhonjs-backbone-esnext/backbone-esnext) and the main [issues forum](https://github.com/typhonjs-backbone-esnext/backbone-esnext/issues).
+
+`backbone-esnext-events` separates 'Events' support from [backbone-esnext](https://github.com/typhonjs-backbone-esnext) in addition to adding TyphonJS extensions found in [TyphonEvents](https://github.com/typhonjs-backbone-esnext/backbone-esnext-events/blob/master/src/TyphonEvents.js). The events dispatch functionality is useful well outside the context of Backbone and is utilized across several TyphonJS repos. It should be noted that there are no dependencies with backbone-esnext-events and it can be used independently in any project without pulling in Underscore like Backbone does. 
 
 The default trigger mechanism work justs as it does with Backbone:
 - `trigger` - Invokes all targets matched with a one way message. 
